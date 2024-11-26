@@ -9,8 +9,8 @@ import mongoose, { Schema, Document } from 'mongoose';
 
 interface IAbout extends Document {
     content: string;
-    birthday: Date;
-    age: number;
+    birthday: String;
+    age: String;
     location: string;
     interests: string[];
     email: string;
@@ -23,8 +23,8 @@ interface IAbout extends Document {
 const AboutSchema: Schema<IAbout> = new Schema(
     {
         content: { type: String, required: true },
-        birthday: { type: Date, required: true },
-        age: { type: Number, required: true },
+        birthday: { type: String, required: true },
+        age: { type: String, required: true },
         location: { type: String, required: true },
         interests: { type: [String], required: true },
         email: { type: String, required: true, unique: true },

@@ -2,8 +2,8 @@
   "compilerOptions": {
     "target": "ES6",
     "module": "commonjs",
-    "outDir": "./dist",  // Compile to dist folder
-    "rootDir": "./",      // Source code is in the root directory
+    "outDir": "./dist",
+    "rootDir": "./",
     "strict": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
@@ -19,7 +19,7 @@
     "strictNullChecks": true
   },
   "include": [
-    "app.ts", "index.ts"  // Include files in the root directory
+    "app.ts", "index.ts"
   ],
   "exclude": [
     "node_modules", "dist"

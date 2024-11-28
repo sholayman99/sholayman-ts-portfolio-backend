@@ -15,21 +15,21 @@ interface IProject extends Document{
     shortDes: string;
     images?: string[];
     tools: string;
-    gitLink: string;
+    gitLink: string[];
     liveLink?: string;
 }
 
 const ProjectSchema: Schema<IProject> = new Schema(
     {
-        title: { type: String, required: true },
+        title: { type: String, required: true,unique: true },
         cover: { type: String, required: true },
         feature: { type: String, required: true },
         overview: { type: String, required: true },
         shortDes: { type: String, required: true },
         images: { type: [String]},
         tools: { type: String, required: true },
-        gitLink: { type: String, required: true },
-        liveLink: { type: String, required: false },
+        gitLink: { type: [String], required: true },
+        liveLink: { type: String },
     },
     { timestamps: true, versionKey: false }
 );

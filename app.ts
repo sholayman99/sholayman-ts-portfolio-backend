@@ -6,6 +6,7 @@ import hpp from "hpp";
 import helmet from "helmet";
 import mongoSanitize from "express-mongo-sanitize";
 import { rateLimit } from "express-rate-limit";
+import cookieParser from 'cookie-parser';
 
 
 // Initialize environment variables
@@ -16,6 +17,7 @@ const app: Application = express();
 
 // Router import
 import router from "./src/route/api";
+
 
 // Security middleware
 const limiter = rateLimit({
@@ -37,10 +39,11 @@ app.use(mongoSanitize()); // Sanitize MongoDB queries
 app.use(limiter); // Rate limiting
 app.use(express.json({ limit: "100mb" })); // Parse JSON payloads with size limit
 app.use(express.urlencoded({ extended: true, limit: "100mb" })); // Parse URL-encoded data
-
+app.use(cookieParser());
 
 // Router setup
 app.use("/api/v1", router);
+
 
 // MongoDB database connection
 async function connectToMongoDB(): Promise<void> {

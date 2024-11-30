@@ -11,10 +11,11 @@ import {
     changePassword,
     createAdminUser,
     forgotPassword,
-    loginAdmin,
+    loginAdmin, logoutAdmin,
     resetPassword
 } from "../controllers/adminController";
 import {verifyToken} from "../middlewares/verifyToken";
+import {createContact} from "../controllers/contactController";
 
 const router = express.Router();
 
@@ -34,9 +35,13 @@ router.delete('/remove-project/:id',verifyToken,removeProject);
 //admin
 router.post('/create-admin',createAdminUser);
 router.post('/login', loginAdmin);
+router.get('/logout',verifyToken,logoutAdmin);
 router.post('/change-password',verifyToken,changePassword);
 //forgot-password
 router.post('/forgot-password',forgotPassword);
 router.post('/reset-password',resetPassword);
+
+//contact
+router.post('/contact' ,createContact);
 
 export default router;

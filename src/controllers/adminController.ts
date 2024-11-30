@@ -165,14 +165,13 @@ export const forgotPassword = async (req: Request, res: Response): Promise<void>
         await user.save();
 
         const mailOptions = {
+            from:`<${process.env.GMAIL_USER}>`,
             to: user.email,
             subject: "Password Reset OTP",
-            text: `Your OTP for password reset is ${otp}. It will expire in 15 minutes.`,
-            html: `<p>Your OTP for password reset is <strong>${otp}</strong>. It will expire in 15 minutes.</p>`,
+            text: `Your OTP for password reset is ${otp}.It will expire in 15 minutes.`,
         };
 
         await sendMail(mailOptions);
-
         res.status(200).json({ message: "Password reset OTP sent successfully." });
     } catch (error) {
         console.error("Error in forgotPassword:", error);
@@ -225,6 +224,20 @@ export const resetPassword = async (req: Request, res: Response): Promise<void> 
     }
 };
 
-
+//logout
+export const logoutAdmin = async (_: Request, res: Response): Promise<void> => {
+    try {
+        // Clear the refresh token cookie
+        res.clearCookie('refreshToken', {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict',
+        });
+        res.status(200).json({ message: "Logout successful" });
+    } catch (error) {
+        console.error("Error logging out admin:", error);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+};
 
 

@@ -37,15 +37,15 @@ This is a web application for managing my freelance web development services, cl
 
 # Ignore the .env file
 - .env
-PORT=8000
-DB_URI=mongodb://YourDatabaseHost:27017/your-database-name   # MongoDB connection string
-ADMIN_EMAIL=your_email@example.com
-ADMIN_USERNAME=your_admin_username
-ADMIN_FULLNAME="Your Full Name"
-ADMIN_PASSWORD="YourSecurePassword"
-JWT_REFRESH_SECRET=YourRefreshSecretKey
-JWT_SECRET=YourSecretKeyForJWT
-GMAIL_USER=your_email@gmail.com          # Gmail for sending emails (if applicable)
-GMAIL_PASS=your_email_password           # Use Gmail App Password if 2FA is enabled
+- PORT=8000
+- DB_URI=mongodb://YourDatabaseHost:27017/your-database-name   # MongoDB connection string
+- ADMIN_EMAIL=your_email@example.com
+- ADMIN_USERNAME=your_admin_username
+- ADMIN_FULLNAME="Your Full Name"
+- ADMIN_PASSWORD="YourSecurePassword"
+- JWT_REFRESH_SECRET=YourRefreshSecretKey
+- JWT_SECRET=YourSecretKeyForJWT
+- GMAIL_USER=your_email@gmail.com          # Gmail for sending emails (if applicable)
+- GMAIL_PASS=your_email_password           # Use Gmail App Password if 2FA is enabled
 
 

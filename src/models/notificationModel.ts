@@ -1,16 +1,21 @@
+/*
+* Author: Md. Sholayman
+* Description: This file contains the model for notifications.
+* Date: 30 November 2024
+*/
+
 import { Schema, model, Document } from "mongoose";
 
-// Defining the interface for the Notification schema
+
 interface INotification extends Document {
     type: string;
     message: string;
     createdAt: Date;
     read: boolean;
-    readAt: Date | null;  // Timestamp when the notification was read
+    readAt: Date | null;
     user: string;
 }
 
-// Defining the Notification schema
 const notificationSchema = new Schema<INotification>({
     type: {
         type: String,
@@ -26,11 +31,11 @@ const notificationSchema = new Schema<INotification>({
     },
     read: {
         type: Boolean,
-        default: false,  // Default is unread
+        default: false,
     },
     readAt: {
         type: Date,
-        default: null,  // Set to null if not read
+        default: null,
     },
     user: {
         type: String,

@@ -1,7 +1,7 @@
 /*
 * Author: Md. Sholayman
-* Description: This file contains the settings for email.
-* Date: 26 November 2024
+* Description: This file contains the model for email settings.
+* Date: 30 November 2024
 */
 
 import mongoose, { Schema, Document } from 'mongoose';

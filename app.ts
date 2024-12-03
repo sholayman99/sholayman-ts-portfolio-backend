@@ -48,7 +48,7 @@ app.use("/api/v1", router);
 // MongoDB database connection
 async function connectToMongoDB(): Promise<void> {
     try {
-        const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.66z3s.mongodb.net/tsPortfolio`;
+        const uri = `${process.env.DB_URI}/tsPortfolio`;
         await mongoose.connect(uri);
         console.log("Connected to MongoDB");
         // Perform database operations here

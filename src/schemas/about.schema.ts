@@ -1,7 +1,7 @@
 /*
  * Author: Md. Sholayman
  * Description: Mongoose model for About section.
- * Date: 26 November 2024
+ * Date: Updated on 1 May 2025
  */
 
 import mongoose, { Schema, Document } from 'mongoose';
@@ -15,18 +15,33 @@ interface WorkExperience {
     responsibilities: string[];
 }
 
+interface Qualification {
+    degree: string;
+    institution: string;
+    passingYear: string;
+    department: string;
+}
+
+interface Certifications {
+    title: string;
+    institute: string;
+    timeline: string;
+    batch: string;
+}
+
 export interface IAbout extends Document {
     content: string;
-    birthday: string; // ISO format expected (e.g., "1999-05-11")
+    birthday: string;
     location: string;
     interests: string[];
     email: string;
     phone: string;
     skills: string[];
     softSkills: string[];
-    qualification: string;
+    qualification: Qualification[];
     workExperience: WorkExperience[];
-    calculatedAge?: number; // virtual
+    certifications: Certifications[];
+    calculatedAge?: number;
 }
 
 const WorkExperienceSchema = new Schema<WorkExperience>(
@@ -37,6 +52,26 @@ const WorkExperienceSchema = new Schema<WorkExperience>(
         startDate: { type: Date, required: true },
         endDate: { type: Date, default: null },
         responsibilities: { type: [String], required: true, default: [] },
+    },
+    { _id: false }
+);
+
+const QualificationSchema = new Schema<Qualification>(
+    {
+        degree: { type: String, required: true, trim: true },
+        institution: { type: String, required: true, trim: true },
+        passingYear: { type: String, required: true, trim: true },
+        department: { type: String, required: true, trim: true },
+    },
+    { _id: false }
+);
+
+const CertificationSchema = new Schema<Certifications>(
+    {
+        title: { type: String, required: true, trim: true },
+        institute: { type: String, required: true, trim: true },
+        timeline: { type: String, required: true, trim: true },
+        batch: { type: String, required: true, trim: true },
     },
     { _id: false }
 );
@@ -63,8 +98,9 @@ const AboutSchema = new Schema<IAbout>(
         },
         skills: { type: [String], required: true, default: [] },
         softSkills: { type: [String], required: true, default: [] },
-        qualification: { type: String, required: true, trim: true },
+        qualification: { type: [QualificationSchema], required: true, default: [] },
         workExperience: { type: [WorkExperienceSchema], default: [] },
+        certifications: { type: [CertificationSchema], default: [] },
     },
     {
         timestamps: true,

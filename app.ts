@@ -43,6 +43,10 @@ app.use(cookieParser());
 // Router setup
 app.use("/api/v1", router);
 
+app.use("/",(_:Request,res:Response)=>{
+    res.status(200).json({ message: "Welcome to Sholayman world!" });
+})
+
 // 404 route handler
 app.use("*", (_: Request, res: Response)   => {
     res.status(404).json({ message: "Resource not found" });

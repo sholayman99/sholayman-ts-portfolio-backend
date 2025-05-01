@@ -25,10 +25,12 @@ const limiter = rateLimit({
     legacyHeaders: false,
 });
 
-// Middleware implementation
 app.use(
     cors({
-        origin: "https://localhost:5173", // Frontend URL
+        origin: [
+            "*",
+            process.env.FRONTEND_URL || 'http://localhost:3000',
+        ],
         credentials: true,
     })
 );

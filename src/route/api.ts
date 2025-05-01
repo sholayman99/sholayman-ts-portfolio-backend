@@ -1,44 +1,44 @@
 import express = require('express');
-import {createAbout, getAbout, updateAbout} from "../controllers/aboutController";
+import {createAbout, getAbout, updateAbout} from "../controllers/about.controller";
 import {
     createProject,
     getAllProjects,
     getSingleProject,
     removeProject,
     updateProject
-} from "../controllers/projectController";
+} from "../controllers/project.controller";
 import {
     changePassword,
     createAdminUser,
     forgotPassword,
     loginAdmin, logoutAdmin,
     resetPassword
-} from "../controllers/adminController";
+} from "../controllers/admin.controller";
 import {verifyToken} from "../middlewares/verifyToken";
-import {createContact} from "../controllers/contactController";
-import {upsertEmailSettings} from "../controllers/emailSettingsController";
+import {createContact} from "../controllers/contact.controller";
+import {upsertEmailSettings} from "../controllers/email.settings.controller";
 import {
     deleteNotification,
     getAllNotifications,
     getSingleNotification,
     markNotificationAsRead
-} from "../controllers/notificationsController";
-import {createSocial, deleteSocial, getAllSocials, getSocialById, updateSocial} from "../controllers/socialController";
-import {createTool, deleteTool, getSingleTool, getTools, updateTool} from "../controllers/toolController";
+} from "../controllers/notifications.controller";
+import {createSocial, deleteSocial, getAllSocials, getSocialById, updateSocial} from "../controllers/social.controller";
+import {createTool, deleteTool, getSingleTool, getTools, updateTool} from "../controllers/tool.controller";
 import {
     createService,
     getAllServices,
     getServiceById,
     updateService,
     deleteService,
-} from "../controllers/serviceController";
+} from "../controllers/service.controller";
 import {
     createClient,
     getAllClients,
     getClientById,
     updateClient,
     deleteClient,
-} from "../controllers/clientController";
+} from "../controllers/client.controller";
 
 const router = express.Router();
 

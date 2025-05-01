@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import About from '../models/aboutModel';
+import About from '../schemas/about.schema';
 import { ValidationError } from 'express-validation';
 
 // Define a custom type for req.body
@@ -7,13 +7,21 @@ interface AboutRequest extends Request {
     body: {
         content?: string;
         birthday?: string;
-        age?: string;
         location?: string;
         interests?: string[];
         email?: string;
         phone?: string;
         skills?: string[];
+        softSkills?: string[];
         qualification?: string;
+        workExperience?: {
+            title: string;
+            company: string;
+            location: string;
+            startDate: string;
+            endDate?: string | null;
+            responsibilities: string[];
+        }[];
     };
 }
 
@@ -30,10 +38,10 @@ export const createAbout = async (req: AboutRequest, res: Response): Promise<voi
             return;
         }
 
-        const { content, birthday, age, location, interests, email, phone, skills, qualification } = req.body;
+        const { content, birthday, location, interests, email, phone, skills,  softSkills, qualification, workExperience } = req.body;
 
         // Validation
-        if (!content || !birthday || !age || !location || !interests || !email || !phone || !skills || !qualification) {
+        if (!content || !birthday || !location || !interests || !email || !phone || !skills || !softSkills || !qualification || !workExperience) {
             res.status(400).json({
                 message: 'All fields are required. Please ensure all information is provided.',
             });
@@ -43,13 +51,14 @@ export const createAbout = async (req: AboutRequest, res: Response): Promise<voi
         const about = new About({
             content,
             birthday,
-            age,
             location,
             interests,
             email,
             phone,
             skills,
+            softSkills,
             qualification,
+            workExperience,
         });
 
         // Save the new entry to the database
@@ -80,7 +89,6 @@ export const createAbout = async (req: AboutRequest, res: Response): Promise<voi
         }
     }
 };
-
 
 // Get the About entry
 export const getAbout = async (_: Request, res: Response): Promise<void> => {
@@ -118,29 +126,38 @@ export const getAbout = async (_: Request, res: Response): Promise<void> => {
 // Update the About entry
 export const updateAbout = async (req: AboutRequest, res: Response): Promise<void> => {
     try {
-        const { content, birthday, age, location, interests, email, phone, skills, qualification } = req.body;
+        const { content, birthday, location, interests, email, phone, skills, softSkills, qualification, workExperience } = req.body;
 
         const updates: Partial<{
             content: string;
             birthday: string;
-            age: string;
             location: string;
             interests: string[];
             email: string;
             phone: string;
             skills: string[];
+            softSkills: string[];
             qualification: string;
+            workExperience: {
+                title: string;
+                company: string;
+                location: string;
+                startDate: string;
+                endDate?: string | null;
+                responsibilities: string[];
+            }[];
         }> = {};
 
         if (content !== undefined) updates.content = content;
         if (birthday !== undefined) updates.birthday = birthday;
-        if (age !== undefined) updates.age = age;
         if (location !== undefined) updates.location = location;
         if (interests !== undefined) updates.interests = interests;
         if (email !== undefined) updates.email = email;
         if (phone !== undefined) updates.phone = phone;
         if (skills !== undefined) updates.skills = skills;
+        if (softSkills !== undefined) updates.softSkills = softSkills;
         if (qualification !== undefined) updates.qualification = qualification;
+        if (workExperience !== undefined) updates.workExperience = workExperience;
 
         const updatedAbout = await About.findOneAndUpdate({}, updates, {
             new: true, // Return the updated document

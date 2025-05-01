@@ -1,4 +1,4 @@
-import Tool from "../models/toolModel";
+import Tool from "../schemas/tool.schema";
 import {Request, Response} from "express";
 
 //Create: create tool entry

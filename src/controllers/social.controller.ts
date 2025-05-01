@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import Social from "../models/socialModel";
+import Social from "../schemas/social.schema";
 
 // CREATE: Add a new social media entry
 export const createSocial = async (req: Request, res: Response): Promise<void> => {

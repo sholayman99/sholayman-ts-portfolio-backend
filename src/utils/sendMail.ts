@@ -1,5 +1,5 @@
 import nodemailer from 'nodemailer';
-import Email from "../models/emailSettingsModel";
+import Email from "../schemas/email.settings.schema";
 
 interface MailOptions {
     to: string;

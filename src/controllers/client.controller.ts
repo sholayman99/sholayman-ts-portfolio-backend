@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import Client from "../models/clientModel";
+import Client from "../schemas/client.schema";
 
 // CREATE: Add a new client
 export const createClient = async (req: Request, res: Response): Promise<void> => {

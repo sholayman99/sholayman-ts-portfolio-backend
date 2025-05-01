@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import Service from "../models/serviceModel";
+import Service from "../schemas/service.schema";
 
 // CREATE: Add a new service
 export const createService = async (req: Request, res: Response): Promise<void> => {

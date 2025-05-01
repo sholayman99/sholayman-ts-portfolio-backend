@@ -1,7 +1,7 @@
 import nodemailer from "nodemailer";
 import { Request, Response } from "express";
-import Email from "../models/emailSettingsModel";
-import Notification from "../models/notificationModel";
+import Email from "../schemas/email.settings.schema";
+import Notification from "../schemas/notification.schema";
 
 export const createContact = async (req: Request, res: Response) => {
     try {

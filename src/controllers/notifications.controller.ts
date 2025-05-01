@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import Notification from "../models/notificationModel";
+import Notification from "../schemas/notification.schema";
 
 // Get all notifications for the user
 export const getAllNotifications = async (_: Request, res: Response) => {

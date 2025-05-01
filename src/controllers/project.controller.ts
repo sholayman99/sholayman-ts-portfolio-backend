@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import Project from '../models/projectModel';
+import Project from '../schemas/project.schema';
 
 // Create Project
 export const createProject = async (req: Request, res: Response): Promise<void> => {

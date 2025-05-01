@@ -1,6 +1,6 @@
 import bcrypt from "bcrypt";
 import {Request, Response} from "express";
-import Admin from "../models/adminModel";
+import Admin from "../schemas/admin.schema";
 import jwt from "jsonwebtoken";
 import {sendMail} from "../utils/sendMail";
 

@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import Email from "../models/emailSettingsModel";
+import Email from "../schemas/email.settings.schema";
 
 
 export const upsertEmailSettings = async (req: Request, res: Response): Promise<void> => {

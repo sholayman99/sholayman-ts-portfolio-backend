@@ -6,7 +6,7 @@
 
 import mongoose, { Schema, Document } from 'mongoose';
 
-interface WorkExperience {
+export interface WorkExperience {
     title: string;
     company: string;
     location: string;
@@ -15,14 +15,14 @@ interface WorkExperience {
     responsibilities: string[];
 }
 
-interface Qualification {
+export interface Qualification {
     degree: string;
     institution: string;
     passingYear: string;
     department: string;
 }
 
-interface Certifications {
+export interface Certifications {
     title: string;
     institute: string;
     timeline: string;
@@ -44,7 +44,7 @@ export interface IAbout extends Document {
     calculatedAge?: number;
 }
 
-const WorkExperienceSchema = new Schema<WorkExperience>(
+ const WorkExperienceSchema = new Schema<WorkExperience>(
     {
         title: { type: String, required: true, trim: true },
         company: { type: String, required: true, trim: true },
@@ -56,7 +56,7 @@ const WorkExperienceSchema = new Schema<WorkExperience>(
     { _id: false }
 );
 
-const QualificationSchema = new Schema<Qualification>(
+ const QualificationSchema = new Schema<Qualification>(
     {
         degree: { type: String, required: true, trim: true },
         institution: { type: String, required: true, trim: true },
@@ -66,7 +66,7 @@ const QualificationSchema = new Schema<Qualification>(
     { _id: false }
 );
 
-const CertificationSchema = new Schema<Certifications>(
+ const CertificationSchema = new Schema<Certifications>(
     {
         title: { type: String, required: true, trim: true },
         institute: { type: String, required: true, trim: true },

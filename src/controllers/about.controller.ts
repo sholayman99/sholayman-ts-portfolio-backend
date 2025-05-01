@@ -1,8 +1,7 @@
 import { Request, Response } from 'express';
 import About from '../schemas/about.schema';
-import { ValidationError } from 'express-validation';
+import { IAbout, Qualification, Certifications, WorkExperience } from '../schemas/about.schema';
 
-// Define a custom type for req.body
 interface AboutRequest extends Request {
     body: {
         content?: string;
@@ -13,265 +12,212 @@ interface AboutRequest extends Request {
         phone?: string;
         skills?: string[];
         softSkills?: string[];
-        qualification?: {
-            degree: string;
-            institution: string;
-            passingYear: string;
-            department: string;
-        }[];
-        certifications?: {
-            title: string;
-            institute: string;
-            timeline: string;
-            batch: string;
-        }[];
-        workExperience?: {
-            title: string;
-            company: string;
-            location: string;
-            startDate: string;
-            endDate?: string | null;
-            responsibilities: string[];
-        }[];
+        qualification?: Qualification[];
+        certifications?: Certifications[];
+        workExperience?: WorkExperience[];
     };
 }
 
+// Helper function for validation
+const validateQualification = (qualifications: Qualification[]): boolean => {
+    return qualifications.every(q =>
+        q.degree?.trim() &&
+        q.institution?.trim() &&
+        q.passingYear?.trim() &&
+        q.department?.trim()
+    );
+};
 
-// Create an About entry
+const validateCertification = (certifications: Certifications[]): boolean => {
+    return certifications.every(c =>
+        c.title?.trim() &&
+        c.institute?.trim() &&
+        c.timeline?.trim() &&
+        c.batch?.trim()
+    );
+};
+
+const validateWorkExperience = (experiences: WorkExperience[]): boolean => {
+    return experiences.every(exp =>
+        exp.title?.trim() &&
+        exp.company?.trim() &&
+        exp.location?.trim() &&
+        exp.startDate &&
+        Array.isArray(exp.responsibilities)
+    );
+};
+
+// Create About
 export const createAbout = async (req: AboutRequest, res: Response): Promise<void> => {
     try {
         const existingAbout = await About.findOne();
         if (existingAbout) {
-            res.status(403).json({
-                message: 'An About entry already exists. You can only update the existing entry.',
-            });
-            return;
-        }
-
-        const {
-            content,
-            birthday,
-            location,
-            interests,
-            email,
-            phone,
-            skills,
-            softSkills,
-            qualification,
-            certifications,
-            workExperience
-        } = req.body;
-
-        // Manual validation
-        if (
-            !content ||
-            !birthday ||
-            !location ||
-            !Array.isArray(interests) || interests.length === 0 ||
-            !email ||
-            !phone ||
-            !Array.isArray(skills) || skills.length === 0 ||
-            !Array.isArray(softSkills) || softSkills.length === 0 ||
-            !Array.isArray(qualification) || qualification.length === 0 ||
-            !Array.isArray(certifications) || certifications.length === 0 ||
-            !Array.isArray(workExperience) || workExperience.length === 0
-        ) {
             res.status(400).json({
-                message: 'All fields are required. Please ensure all information is provided.',
+                message: 'About entry already exists. Use update instead.',
+                existingId: existingAbout._id
             });
             return;
         }
 
-        // Optional: validate each qualification and certification object
-        const isValidQualification = qualification.every(q =>
-            q.degree && q.institution && q.passingYear && q.department
-        );
-        const isValidCertification = certifications.every(c =>
-            c.title && c.institute && c.timeline && c.batch
-        );
-        const isValidExperience = workExperience.every(w =>
-            w.title && w.company && w.location && w.startDate && Array.isArray(w.responsibilities) && w.responsibilities.length > 0
-        );
+        const { qualification, certifications, workExperience, ...rest } = req.body;
 
-        if (!isValidQualification || !isValidCertification || !isValidExperience) {
+        // Validate required fields
+        if (!rest.content || !rest.birthday || !rest.location || !rest.email || !rest.phone) {
             res.status(400).json({
-                message: 'Invalid structure in qualifications, certifications, or workExperience.',
+                message: 'Missing required fields: content, birthday, location, email, phone'
             });
             return;
         }
 
-        const about = new About({
-            content,
-            birthday,
-            location,
-            interests,
-            email,
-            phone,
-            skills,
-            softSkills,
-            qualification,
-            certifications,
-            workExperience,
-        });
+        // Validate arrays if provided
+        if (qualification && !validateQualification(qualification)) {
+            res.status(400).json({
+                message: 'Invalid qualification data structure'
+            });
+            return;
+        }
 
+        if (certifications && !validateCertification(certifications)) {
+            res.status(400).json({
+                message: 'Invalid certifications data structure'
+            });
+            return;
+        }
+
+        if (workExperience && !validateWorkExperience(workExperience)) {
+            res.status(400).json({
+                message: 'Invalid workExperience data structure'
+            });
+            return;
+        }
+
+        const aboutData: Partial<IAbout> = {
+            ...rest,
+            qualification: qualification || [],
+            certifications: certifications || [],
+            workExperience: workExperience || [],
+            skills: rest.skills || [],
+            softSkills: rest.softSkills || [],
+            interests: rest.interests || []
+        };
+
+        const about = new About(aboutData);
         await about.save();
 
         res.status(201).json({
-            message: 'About entry created successfully!',
-            about,
+            message: 'About created successfully',
+            about
         });
     } catch (error) {
-        console.error('Error creating About:', error);
-
-        if (error instanceof ValidationError) {
-            res.status(422).json({
-                message: 'Validation error occurred. Please check the input data.',
-                error: error.details,
-            });
-        } else if (error instanceof Error) {
-            res.status(500).json({
-                message: 'An error occurred while creating the About entry.',
-                error: error.message,
-            });
-        } else {
-            res.status(500).json({
-                message: 'An unexpected error occurred.',
-                error: String(error),
-            });
-        }
+        console.error('Create About error:', error);
+        res.status(500).json({
+            message: 'Server error creating About entry',
+            error: error instanceof Error ? error.message : 'Unknown error'
+        });
     }
 };
 
-
-// Get the About entry
+// Get About
 export const getAbout = async (_: Request, res: Response): Promise<void> => {
     try {
-        const about = await About.findOne();
+        const about = await About.findOne().lean();
 
         if (!about) {
-            res.status(404).json({
-                message: 'About entry not found.',
-            });
+            res.status(404).json({ message: 'About entry not found' });
             return;
         }
 
+        // Calculate age if needed
+        const aboutWithVirtuals = {
+            ...about,
+            calculatedAge: about.birthday ?
+                new Date().getFullYear() - new Date(about.birthday).getFullYear() :
+                undefined
+        };
+
         res.status(200).json({
-            message: 'About entry retrieved successfully!',
-            about,
+            message: 'About retrieved successfully',
+            about: aboutWithVirtuals
         });
     } catch (error) {
-        console.error('Error retrieving About:', error);
-
-        if (error instanceof Error) {
-            res.status(500).json({
-                message: 'An error occurred while retrieving the About entry.',
-                error: error.message,
-            });
-        } else {
-            res.status(500).json({
-                message: 'An unexpected error occurred.',
-                error: String(error),
-            });
-        }
+        console.error('Get About error:', error);
+        res.status(500).json({
+            message: 'Server error retrieving About',
+            error: error instanceof Error ? error.message : 'Unknown error'
+        });
     }
 };
 
-// Update the About entry
+// Update About
 export const updateAbout = async (req: AboutRequest, res: Response): Promise<void> => {
     try {
-        const {
-            content,
-            birthday,
-            location,
-            interests,
-            email,
-            phone,
-            skills,
-            softSkills,
-            qualification,
-            certifications,
-            workExperience
-        } = req.body;
+        const { qualification, certifications, workExperience, ...rest } = req.body;
+        const updates: Partial<IAbout> = { ...rest };
 
-        const updates: any = {};
-
-        if (content !== undefined) updates.content = content;
-        if (birthday !== undefined) updates.birthday = birthday;
-        if (location !== undefined) updates.location = location;
-        if (Array.isArray(interests)) updates.interests = interests;
-        if (email !== undefined) updates.email = email;
-        if (phone !== undefined) updates.phone = phone;
-        if (Array.isArray(skills)) updates.skills = skills;
-        if (Array.isArray(softSkills)) updates.softSkills = softSkills;
-
-        if (Array.isArray(qualification)) {
-            const isValidQualification = qualification.every(q =>
-                q.degree && q.institution && q.passingYear && q.department
-            );
-            if (!isValidQualification) {
-                res.status(400).json({
-                    message: 'Invalid structure in qualification array.',
-                });
+        // Handle qualification update
+        if (qualification !== undefined) {
+            if (!Array.isArray(qualification)) {
+                res.status(400).json({ message: 'qualification must be an array' });
+                return;
+            }
+            if (!validateQualification(qualification)) {
+                res.status(400).json({ message: 'Invalid qualification data' });
                 return;
             }
             updates.qualification = qualification;
         }
 
-        if (Array.isArray(certifications)) {
-            const isValidCertification = certifications.every(c =>
-                c.title && c.institute && c.timeline && c.batch
-            );
-            if (!isValidCertification) {
-                res.status(400).json({
-                    message: 'Invalid structure in certifications array.',
-                });
+        // Handle certifications update
+        if (certifications !== undefined) {
+            if (!Array.isArray(certifications)) {
+                res.status(400).json({ message: 'certifications must be an array' });
+                return;
+            }
+            if (!validateCertification(certifications)) {
+                res.status(400).json({ message: 'Invalid certifications data' });
                 return;
             }
             updates.certifications = certifications;
         }
 
-        if (Array.isArray(workExperience)) {
-            const isValidExperience = workExperience.every(w =>
-                w.title && w.company && w.location && w.startDate && Array.isArray(w.responsibilities) && w.responsibilities.length > 0
-            );
-            if (!isValidExperience) {
-                res.status(400).json({
-                    message: 'Invalid structure in workExperience array.',
-                });
+        // Handle work experience update
+        if (workExperience !== undefined) {
+            if (!Array.isArray(workExperience)) {
+                res.status(400).json({ message: 'workExperience must be an array' });
                 return;
             }
-            updates.workExperience = workExperience;
+            if (!validateWorkExperience(workExperience)) {
+                res.status(400).json({ message: 'Invalid workExperience data' });
+                return;
+            }
+
+            updates.workExperience = workExperience.map(exp => ({
+                ...exp,
+                startDate: new Date(exp.startDate),
+                endDate: exp.endDate ? new Date(exp.endDate) : null
+            }));
         }
 
-        const updatedAbout = await About.findOneAndUpdate({}, updates, {
-            new: true,
-            omitUndefined: true,
-        });
+        const updatedAbout = await About.findOneAndUpdate(
+            {},
+            updates,
+            { new: true, runValidators: true, upsert: false }
+        ).lean();
 
         if (!updatedAbout) {
-            res.status(404).json({
-                message: 'About entry not found.',
-            });
+            res.status(404).json({ message: 'About entry not found' });
             return;
         }
 
         res.status(200).json({
-            message: 'About entry updated successfully!',
-            updatedAbout,
+            message: 'About updated successfully',
+            about: updatedAbout
         });
     } catch (error) {
-        console.error('Error updating About:', error);
-
-        if (error instanceof Error) {
-            res.status(500).json({
-                message: 'Failed to update About entry.',
-                error: error.message,
-            });
-        } else {
-            res.status(500).json({
-                message: 'An unexpected error occurred.',
-                error: String(error),
-            });
-        }
+        console.error('Update About error:', error);
+        res.status(500).json({
+            message: 'Server error updating About',
+            error: error instanceof Error ? error.message : 'Unknown error'
+        });
     }
 };
